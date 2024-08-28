@@ -1,24 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   channelMode.cpp                                    :+:      :+:    :+:   */
+/*   error.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/18 20:51:33 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/18 21:38:42 by maagosti         ###   ########.fr       */
+/*   Created: 2024/08/21 16:02:03 by maagosti          #+#    #+#             */
+/*   Updated: 2024/08/21 16:02:43 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "channelMode.hpp"
+#pragma once
 
-ChannelMode::~ChannelMode() {}
-
-ChannelMode::ChannelMode()
-{
-	_is_invite_only = false;
-	_is_mod_only_topic = false;
-	_has_password = false;
-	_has_user_limit = false;
-	_user_limit = 0;
-}
+#define ERR_USER_NOT_OPERATOR "User is not an operator"
+#define ERR_USER_NOT_IN_CHANNEL "User is not in channel"

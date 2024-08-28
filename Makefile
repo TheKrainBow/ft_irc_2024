@@ -1,9 +1,7 @@
 SRCS			=	main.cpp				\
 					channel.cpp				\
-					channelMode.cpp			\
-					IRCServer.cpp			\
+					server.cpp				\
 					user.cpp				\
-					debug.cpp				\
 
 INCLUDES		=	-Iincludes				\
 
@@ -24,8 +22,7 @@ TMP2		=	20
 CC				=	c++
 RM				=	@rm -f
 
-FLAGS			=	-Wall -Werror -Wextra $(INCLUDES) -std=c++98
-#-g -fsanitize=address
+FLAGS			=	-Wall -Werror -Wextra $(INCLUDES) -std=c++98 -g -fsanitize=address
 
 $(OBJ_DIR)/%.o: srcs/%.cpp
 				@mkdir -p $(@D)

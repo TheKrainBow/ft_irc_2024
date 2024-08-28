@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCServer.hpp                                      :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 19:01:17 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/18 22:17:31 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/08/21 16:23:18 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,29 @@
 
 class Channel;
 
-class IRCServer
+class Server
 {
 	private:
-		const std::string				_password;
-		const int						_port;
+		const std::string					_password;
+		const int							_port;
 		std::map<std::string, User *>		_users;
 		std::map<std::string, Channel *>	_channels;
+		std::string							_need_channel_cleanup;
 	private:
 		void addUser(std::string username, std::string nickname);
-		void addChannel(std::string name);
 		void deleteUser(std::string username);
-		void deleteChannel(ChannelID channelId);
+		void deleteChannel(std::string name);
 	public:
+		void addChannel(std::string name);
+		void askCleanup(std::string name);
 		User *getUser(std::string username);
-		IRCServer(int port, std::string password);
-		~IRCServer();
+		Channel *getChannel(std::string channelName);
+		Server(int port, std::string password);
+		~Server();
 		void start();
 #ifdef DEBUG
 	private:
+		void printStatus(void);
 		void listUser(void);
 		void listChannel(void);
 #endif
