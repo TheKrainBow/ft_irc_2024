@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 21:03:26 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/28 23:13:20 by krain            ###   ########.fr       */
+/*   Updated: 2024/08/29 15:13:20 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,4 +160,16 @@ void User::ChannelModeLimit(std::string channelName, int limit)
 	if (!channel->isOp(_username))
 		throw (Channel::InvalidPermissionException(ERR_USER_NOT_OPERATOR));
 	channel->setUserLimit(limit);
+}
+
+void User::ChannelModeOps(std::string channelName, std::string username, bool value)
+{
+	std::cout << GREEN << _username << WHITE << "::ChannelModeOps(" << PURPLE << channelName << WHITE << ", " << GREEN << username << WHITE << ", " << BLUE << value << WHITE << ")" << std::endl;
+	Channel *channel = _server.getChannel(channelName);
+	
+	if (!channel->isUserInChannel(_username))
+		throw (Channel::InvalidPermissionException(ERR_USER_NOT_IN_CHANNEL));
+	if (!channel->isOp(_username))
+		throw (Channel::InvalidPermissionException(ERR_USER_NOT_OPERATOR));
+	channel->opUser(username, value);
 }

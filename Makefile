@@ -1,6 +1,7 @@
 SRCS			=	main.cpp				\
 					channel.cpp				\
 					server.cpp				\
+					server_test.cpp			\
 					user.cpp				\
 
 INCLUDES		=	-Iincludes				\

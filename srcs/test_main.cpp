@@ -1,0 +1,106 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <poll.h>
+
+#define PORT 6667
+#define BUFFER_SIZE 1024
+#define MAX_CLIENTS 100
+
+void handle_client_message(int client_socket) {
+    char buffer[BUFFER_SIZE];
+    memset(buffer, 0, BUFFER_SIZE);
+
+    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+    if (bytes_received <= 0) {
+        // Erreur ou le client a fermé la connexion
+        std::cout << "Client déconnecté, socket: " << client_socket << std::endl;
+        close(client_socket);
+    } else {
+        // Traiter le message reçu
+        std::cout << "Message reçu de " << client_socket << ": " << buffer;
+        // Réponse simple (echo)
+        // send(client_socket, buffer, bytes_received, 0);
+    }
+}
+
+int main() {
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        std::cerr << "Erreur lors de la création du socket serveur." << std::endl;
+        return 1;
+    }
+
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+
+    if (bind(server_socket, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+        std::cerr << "Erreur lors de la liaison du socket serveur." << std::endl;
+        close(server_socket);
+        return 1;
+    }
+
+    if (listen(server_socket, MAX_CLIENTS) == -1) {
+        std::cerr << "Erreur lors de l'écoute sur le socket serveur." << std::endl;
+        close(server_socket);
+        return 1;
+    }
+
+    std::cout << "Serveur IRC en écoute sur le port " << PORT << std::endl;
+
+    std::vector<pollfd> fds;
+    fds.push_back({server_socket, POLLIN, 0});  // Ajouter le socket serveur pour les nouvelles connexions
+
+    while (true) {
+        int poll_count = poll(fds.data(), fds.size(), -1);
+        if (poll_count == -1) {
+            std::cerr << "Erreur avec poll." << std::endl;
+            break;
+        }
+
+        for (size_t i = 0; i < fds.size(); ++i) {
+            if (fds[i].revents & POLLIN) {
+                if (fds[i].fd == server_socket) {
+                    // Nouvelle connexion
+                    sockaddr_in client_addr;
+                    socklen_t client_len = sizeof(client_addr);
+                    int client_socket = accept(server_socket, (sockaddr*)&client_addr, &client_len);
+                    if (client_socket == -1) {
+                        std::cerr << "Erreur lors de l'acceptation de la connexion client." << std::endl;
+                        continue;
+                    }
+
+                    std::cout << "Nouveau client connecté, socket: " << client_socket << std::endl;
+
+                    // Ajouter le nouveau client à la liste des descripteurs surveillés
+                    fds.push_back({client_socket, POLLIN, 0});
+                } else {
+                    // Données reçues d'un client existant
+                    handle_client_message(fds[i].fd);
+                    
+                    // Supprimer le socket si la connexion est fermée ou en erreur
+                    if (fds[i].revents & (POLLHUP | POLLERR)) {
+                        close(fds[i].fd);
+                        fds.erase(fds.begin() + i);
+                        --i;  // Ajuster l'index après la suppression
+                    }
+                }
+            }
+        }
+    }
+
+    // Fermer tous les sockets avant de quitter
+    for (auto &fd : fds) {
+        close(fd.fd);
+    }
+
+    return 0;
+}

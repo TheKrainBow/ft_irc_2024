@@ -6,7 +6,7 @@
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 19:01:17 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/21 16:23:18 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/08/29 15:20:16 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ class Server
 		Server(int port, std::string password);
 		~Server();
 		void start();
+		void cleanup();
+		void test();
 #ifdef DEBUG
 	private:
 		void printStatus(void);
