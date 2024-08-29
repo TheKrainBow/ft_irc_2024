@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
+/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 18:46:32 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/21 16:38:57 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/08/28 23:11:27 by krain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class User
 		void sendClientMessage(std::string msg) const;
 
 		void joinChannel(std::string channelName);
+		void joinChannel(std::string channelName, std::string password);
 		void leaveChannel(std::string channelName);
 		void sendMessage(std::string target, std::string message);
 
@@ -51,7 +52,7 @@ class User
 		void ChannelModeTopic(std::string channelName, bool value);
 		void ChannelModePassword(std::string channelName, std::string password);
 		void ChannelModeOps(std::string channelName, std::string username, bool value);
-		void ChannelModeLimit(std::string channelName, int userLimit, bool value);
+		void ChannelModeLimit(std::string channelName, int userLimit);
 };
 
 #ifdef DEBUG

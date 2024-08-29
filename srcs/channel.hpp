@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
+/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 18:45:54 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/21 16:01:19 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/08/28 20:35:04 by krain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Channel
 		~Channel();
 
 		void addUser(std::string username);
+		void addUser(std::string username, std::string password);
 		void removeUser(std::string username);
 
 		void setTopic(std::string topic);
@@ -53,8 +54,14 @@ class Channel
 		bool hasPassword(void);
 		bool hasUserLimit(void);
 		bool isModOnlyTopic(void);
+	
+		void setInviteOnly(bool value);
+		void setPassword(std::string password);
+		void setUserLimit(int limit);
+		void setModOnlyTopic(bool value);
 
 		std::string getName(void) const;
+		std::string getTopic(void) const;
 		std::map<std::string, User *> getUsers(void) const;
 
 		class CantJoinChannelException : virtual public std::exception
