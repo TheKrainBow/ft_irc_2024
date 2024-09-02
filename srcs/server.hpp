@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
+/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 19:01:17 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/29 15:20:16 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/09/01 16:34:15 by krain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,14 @@
 #endif
 
 #pragma once
+#include <iostream>
 #include <string>
+#include <vector>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <poll.h>
 #include "channel.hpp"
 #include "user.hpp"
 
@@ -29,10 +36,16 @@ class Server
 		std::map<std::string, User *>		_users;
 		std::map<std::string, Channel *>	_channels;
 		std::string							_need_channel_cleanup;
+		std::vector<pollfd>					_sockets;
+		int									_server_socket;
 	private:
 		void addUser(std::string username, std::string nickname);
 		void deleteUser(std::string username);
 		void deleteChannel(std::string name);
+		void startServerSocket();
+		void acceptClientSocket(int client_socket);
+		void closeClientSocket(std::vector<pollfd>::iterator &client);
+		void receiveClientMessage(std::vector<pollfd>::iterator &client);
 	public:
 		void addChannel(std::string name);
 		void askCleanup(std::string name);
@@ -43,6 +56,15 @@ class Server
 		void start();
 		void cleanup();
 		void test();
+		class ServerInitException : virtual public std::exception
+		{
+			private:
+				std::string error_message;
+			public:
+				ServerInitException(const std::string &msg);
+				virtual ~ServerInitException() throw ();
+				const char *what() const throw();
+		};
 #ifdef DEBUG
 	private:
 		void printStatus(void);

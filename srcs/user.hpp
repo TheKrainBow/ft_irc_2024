@@ -6,7 +6,7 @@
 /*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 18:46:32 by maagosti          #+#    #+#             */
-/*   Updated: 2024/08/28 23:11:27 by krain            ###   ########.fr       */
+/*   Updated: 2024/09/01 16:32:02 by krain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class User
 {
 	private:
 		Server							&_server;
+		int								_socket;
+		std::string						_buffer;
 		const std::string				_username;
 		std::string						_nickname;
 		std::ostream					*_os; // Replace this with socket
