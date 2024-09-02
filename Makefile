@@ -2,6 +2,7 @@ SRCS			=	main.cpp				\
 					channel.cpp				\
 					server.cpp				\
 					server_test.cpp			\
+					clientSocket.cpp		\
 					user.cpp				\
 
 INCLUDES		=	-Iincludes				\

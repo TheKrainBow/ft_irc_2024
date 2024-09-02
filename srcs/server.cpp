@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 16:29:43 by krain             #+#    #+#             */
-/*   Updated: 2024/09/01 16:49:55 by krain            ###   ########.fr       */
+/*   Updated: 2024/09/02 19:18:11 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void Server::closeClientSocket(std::vector<pollfd>::iterator &client)
 {
 	std::cout << CYAN << "Server" << WHITE << "::closeClientSocket(" << BLUE << client->fd << WHITE << ")" << std::endl;
 	std::vector<pollfd>::iterator prev = client - 1;
+	_clients.erase(client->fd);
 	close(client->fd);
 	_sockets.erase(client);
 	client = prev;
@@ -103,6 +104,7 @@ void Server::acceptClientSocket(int client_socket)
 	newfd.events = POLLIN;
 	newfd.revents = 0;
 	_sockets.push_back(newfd);
+	_clients[client_socket] = new ClientSocket(*this);
 }
 
 void Server::receiveClientMessage(std::vector<pollfd>::iterator &client)
@@ -118,14 +120,20 @@ void Server::receiveClientMessage(std::vector<pollfd>::iterator &client)
 		return ;
 	} else {
 		std::cout << buffer;
+		_clients[client->fd]->receiveMessage(std::string(buffer));
 		//send(client->fd, buffer, bytes_received, 0);
 	}
 }
 
 void Server::start()
 {
-	std::cout << CYAN << "Server" << WHITE << "::start()" << std::endl;
-	try { startServerSocket(); } catch (ServerInitException &e) { std::cerr << BRED << "  Exception catched: " << RED << e.what() << std::endl; return ; }
+	std::cout << CYAN << "Server" << WHITE << "::start()" << std::endl << "  ";
+	try { startServerSocket(); } catch (ServerInitException &e)
+	{
+		std::cerr << BRED << "    Exception catched: " << RED << e.what() << std::endl;
+		std::cerr << BRED << "                       " << RED << "> Check port is not already in use" << std::endl;
+		return ;
+	}
 	while (true) {
 		int poll_count = poll(_sockets.data(), _sockets.size(), 10);
 		if (poll_count == -1)

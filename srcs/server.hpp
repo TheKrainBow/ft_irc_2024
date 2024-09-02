@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: krain <krain@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 19:01:17 by maagosti          #+#    #+#             */
-/*   Updated: 2024/09/01 16:34:15 by krain            ###   ########.fr       */
+/*   Updated: 2024/09/02 19:19:25 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <poll.h>
 #include "channel.hpp"
 #include "user.hpp"
+#include "clientSocket.hpp"
 
 class Channel;
 
@@ -35,6 +36,7 @@ class Server
 		const int							_port;
 		std::map<std::string, User *>		_users;
 		std::map<std::string, Channel *>	_channels;
+		std::map<int, ClientSocket *>		_clients;
 		std::string							_need_channel_cleanup;
 		std::vector<pollfd>					_sockets;
 		int									_server_socket;
