@@ -6,7 +6,7 @@
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 18:46:32 by maagosti          #+#    #+#             */
-/*   Updated: 2024/09/02 19:25:04 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/09/03 00:10:02 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,23 @@ class ClientSocket
 		Server				&_server;
 		std::string			_buffer;
 		bool				_cap_received;
+		bool				_pass_received;
+		bool				_nick_received;
+		bool				_user_received;
 		std::string			_username;
 		std::string			_nickname;
 		bool				_isLogged;
+		int					_socket;
 	public:
-		ClientSocket(Server &server);
+		ClientSocket(Server &server, int socket);
 		~ClientSocket();
-
 		void receiveMessage(std::string message);
 		void logClient(std::string cmd);
 		bool isLogged() const;
 		std::string getBuffer(void) const;
 		std::string getUsername(void) const;
 		std::string getNickname(void) const;
+		int getSocket(void) const;
 		class ClientLogginException : virtual public std::exception
 		{
 			private:

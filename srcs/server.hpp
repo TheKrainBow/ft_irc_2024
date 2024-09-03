@@ -6,7 +6,7 @@
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 19:01:17 by maagosti          #+#    #+#             */
-/*   Updated: 2024/09/02 19:19:25 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/09/03 00:06:32 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,11 @@ class Server
 		void closeClientSocket(std::vector<pollfd>::iterator &client);
 		void receiveClientMessage(std::vector<pollfd>::iterator &client);
 	public:
+		bool checkPassword(std::string pass) const;
 		void addChannel(std::string name);
 		void askCleanup(std::string name);
 		User *getUser(std::string username);
+		void validateUser(ClientSocket client);
 		Channel *getChannel(std::string channelName);
 		Server(int port, std::string password);
 		~Server();

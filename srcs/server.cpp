@@ -6,7 +6,7 @@
 /*   By: maagosti <maagosti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 16:29:43 by krain             #+#    #+#             */
-/*   Updated: 2024/09/02 19:18:11 by maagosti         ###   ########.fr       */
+/*   Updated: 2024/09/03 02:08:42 by maagosti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,22 @@ Server::~Server()
 		delete (*it).second;
 }
 
+#include <fcntl.h>   // For fcntl function
+#include <unistd.h>  // For close and other POSIX functions
+#include <stdio.h>   // For printf and perror
+#include <errno.h>
+
 void Server::startServerSocket(void)
 {
+	int	opt = 1;
 	std::cout << CYAN << "Server" << WHITE << "::startServerSocket()" << std::endl;
 	_server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_server_socket == -1)
 		throw Server::ServerInitException("Error while creating server socket");
+	if (setsockopt(_server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+		throw Server::ServerInitException("Error while customing socket options");
+	if (fcntl(_server_socket, F_SETFL, O_NONBLOCK) == -1)
+		throw Server::ServerInitException("Error while setting socket as non-blocking");
 
 	sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
@@ -104,12 +114,19 @@ void Server::acceptClientSocket(int client_socket)
 	newfd.events = POLLIN;
 	newfd.revents = 0;
 	_sockets.push_back(newfd);
-	_clients[client_socket] = new ClientSocket(*this);
+	_clients[client_socket] = new ClientSocket(*this, client_socket);
+}
+
+void Server::validateUser(ClientSocket client)
+{
+	std::cout << CYAN << "Server" << WHITE << "::validateUser(" << GREEN << "\"" << client.getUsername() << "\"" << WHITE << ", " << GREEN << "\"" << client.getNickname() << "\"" << WHITE << ")" << std::endl << "  ";
+	addUser(client.getUsername(), client.getNickname());
+	send(client.getSocket(), ":localhost CAP * LS\r\n", 22, 0);
 }
 
 void Server::receiveClientMessage(std::vector<pollfd>::iterator &client)
 {
-	std::cout << CYAN << "Server" << WHITE << "::receiveClientMessage(" << BLUE << client->fd << WHITE << ")" << std::endl;
+	std::cout << CYAN << "Server" << WHITE << "::receiveClientMessage(" << BLUE << client->fd << WHITE << ") ";
 
 	char buffer[1025];
 	memset(buffer, 0, 1025);
@@ -121,7 +138,6 @@ void Server::receiveClientMessage(std::vector<pollfd>::iterator &client)
 	} else {
 		std::cout << buffer;
 		_clients[client->fd]->receiveMessage(std::string(buffer));
-		//send(client->fd, buffer, bytes_received, 0);
 	}
 }
 
@@ -262,6 +278,11 @@ void Server::listChannel(void)
 		std::cout << "   ➜ " << *it->second;
 	if (_channels.size())
 	std::cout << std::endl;
+}
+
+bool Server::checkPassword(std::string pass) const
+{
+	return (_password.compare(pass) == 0);
 }
 
 Server::ServerInitException::ServerInitException(const std::string &msg) : error_message(msg) {}
